@@ -20,17 +20,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        // Build participants list HTML
+        // Build participants list HTML with delete icon
         let participantsHTML = "";
         if (details.participants.length > 0) {
           participantsHTML = `
             <div class="participants-section">
               <strong>Participants:</strong>
-              <ul class="participants-list">
+              <ul class="participants-list no-bullets">
                 ${details.participants
                   .map(
                     (participant) =>
-                      `<li class="participant-item">${participant}</li>`
+                      `<li class="participant-item"><span class="participant-name">${participant}</span> <span class="delete-icon" title="Unregister" data-activity="${name}" data-participant="${participant}">🗑️</span></li>`
                   )
                   .join("")}
               </ul>
@@ -60,6 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
         option.textContent = name;
         activitySelect.appendChild(option);
       });
+
+      // Add event listeners for delete icons
+      document.querySelectorAll('.delete-icon').forEach(icon => {
+        icon.addEventListener('click', async function() {
+          const activity = this.getAttribute('data-activity');
+          const participant = this.getAttribute('data-participant');
+          try {
+            const response = await fetch(`/activities/${encodeURIComponent(activity)}/unregister?email=${encodeURIComponent(participant)}`, {
+              method: 'POST',
+            });
+            if (response.ok) {
+              // Refresh activities list
+              fetchActivities();
+            } else {
+              alert('Failed to unregister participant.');
+            }
+          } catch (error) {
+            alert('Error occurred while unregistering.');
+          }
+        });
+      });
     } catch (error) {
       activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
       console.error("Error fetching activities:", error);
@@ -87,6 +108,8 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        // Immediately refresh activities list after successful signup
+        fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";

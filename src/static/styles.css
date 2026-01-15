@@ -156,17 +156,38 @@ footer {
   margin-bottom: 6px;
 }
 
+
 .participants-list {
-  list-style-type: disc;
-  margin-left: 20px;
+  list-style-type: none;
+  margin-left: 0;
   margin-bottom: 0;
   color: #333;
   font-size: 15px;
+  padding-left: 0;
 }
+
+.no-bullets {
+  list-style-type: none !important;
+  padding-left: 0 !important;
+}
+
 
 .participant-item {
   margin-bottom: 3px;
   padding-left: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.delete-icon {
+  margin-left: 8px;
+  cursor: pointer;
+  color: #c62828;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+.delete-icon:hover {
+  color: #a31515;
 }
 
 .no-participants {
